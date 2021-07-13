@@ -598,68 +598,88 @@ class _MyHomePageState extends State<MyHomePage> {
     print("Path of file to be uploaded:   " + fullPath);
 
     //*************Formula***************************************************
-      var f = new File(fullPath).openRead();
-      var csvFile = await File(fullPath2);
+    var f = new File(fullPath).openRead();
+    var csvFile = await File(fullPath2);
 
-      var dat = await f
-          .transform(utf8.decoder)
-          .transform(
-        CsvToListConverter(),
-      ).toList();
+    var dat = await f
+        .transform(utf8.decoder)
+        .transform(
+      CsvToListConverter(),
+    ).toList();
 
-      List<List<dynamic>> rows = [];
+    List<List<dynamic>> rows = [];
 
-      for (int i = 0; i < ((dat[0].length)/5).round(); i++) {
-        if(i==0) {
-          List<dynamic> rower = [];
-          rower.add('uname');
-          rower.add('beaconid_others');
-          rower.add('date');
-          rower.add('time');
-          rower.add('distance');
-          rower.add('u_beaconid');
+    for (int i = 0; i < ((dat[0].length)/5).round(); i++) {
+      if(i==0) {
+        List<dynamic> rower = [];
+        rower.add('uname');
+        rower.add('beaconid_others');
+        rower.add('date');
+        rower.add('time');
+        rower.add('distance');
+        rower.add('u_beaconid');
+        rows.add(rower);
+      }
+      else if(i>0 && i!=((dat[0].length)/5).round()-1)
+      {
+        List<dynamic> rower = [];
+        var eta=dat[0][5*(i-1)+5];
+        LineSplitter ls = new LineSplitter();
+        List<String> eta_lines = ls.convert(eta);
+
+        if ('${eta_lines[1]}'!=''
+            || '${dat[0][5*i + 1]}'!=''
+            || '${dat[0][5*i + 2]}'!=''
+            || '${dat[0][5*i + 3]}'!=''
+            || '${dat[0][5*i + 4]}'!=''
+            ||eta_lines[1]!=null
+            || dat[0][5*i + 1]!=null
+            || dat[0][5*i + 2]!=null
+            || dat[0][5*i + 3]!=null
+            || dat[0][5*i + 4]!=null) {
+          rower.add(eta_lines[1].toString());
+          rower.add(dat[0][5 * i + 1].toString());
+          rower.add(dat[0][5 * i + 2].toString());
+          rower.add(dat[0][5 * i + 3].toString());
+          rower.add(dat[0][5 * i + 4].toString());
+          List _mas = dat[0][5 * i + 5].split("\n");
+          rower.add(_mas[0].toString());
           rows.add(rower);
         }
-        else if(i>0 && i!=((dat[0].length)/5).round()-1)
-        {
-          List<dynamic> rower = [];
-          var eta=dat[0][5*(i-1)+5];
-          LineSplitter ls = new LineSplitter();
-          List<String> eta_lines = ls.convert(eta);
 
-          List _mas = dat[0][5 * i + 5].split("\n");
-
-          if ('${eta_lines[1]}'!='' || '${dat[0][5*i + 1]}'!='' || '${dat[0][5*i + 2]}'!='' || '${dat[0][5*i + 3]}'!='' || '${dat[0][5*i + 4]}'!='' || '${_mas[0]}'=='') {
-            rower.add(eta_lines[1]);
-            rower.add(dat[0][5 * i + 1]);
-            rower.add(dat[0][5* i + 2]);
-            rower.add(dat[0][5 * i + 3]);
-            rower.add(dat[0][5 * i + 4]);
-            rower.add('${_mas[0]}');
-            rows.add(rower);
-          }
-
-        }
-        else if(i>0 && i==((dat[0].length)/5).round()-1)
-        {
-          List<dynamic> rower = [];
-          var eta=dat[0][5*(i-1)+5];
-          LineSplitter ls = new LineSplitter();
-          List<String> eta_lines = ls.convert(eta);
-
-          if ('${eta_lines[1]}'!='' || '${dat[0][5*i + 1]}'!='' || '${dat[0][5*i + 2]}'!='' || '${dat[0][5*i + 3]}'!='' || '${dat[0][5*i + 4]}'!='' || '${dat[0][5*i + 5]}'!='') {
-            rower.add(eta_lines[1]);
-            rower.add(dat[0][5 * i + 1]);
-            rower.add(dat[0][5 * i + 2]);
-            rower.add(dat[0][5 * i + 3]);
-            rower.add(dat[0][5 * i + 4]);
-            rower.add(dat[0][5 * i + 5]);
-            rows.add(rower);
-          }
-        }
       }
-      String csver = const ListToCsvConverter().convert(rows);
-      csvFile.writeAsString(csver);
+      else if(i>0 && i==((dat[0].length)/5).round()-1)
+      {
+        List<dynamic> rower = [];
+        var eta=dat[0][5*(i-1)+5];
+        LineSplitter ls = new LineSplitter();
+        List<String> eta_lines = ls.convert(eta);
+
+        if ('${eta_lines[1]}'!=''
+            || '${dat[0][5*i + 1]}'!=''
+            || '${dat[0][5*i + 2]}'!=''
+            || '${dat[0][5*i + 3]}'!=''
+            || '${dat[0][5*i + 4]}'!=''
+            ||eta_lines[1]!=null
+            || dat[0][5*i + 1]!=null
+            || dat[0][5*i + 2]!=null
+            || dat[0][5*i + 3]!=null
+            || dat[0][5*i + 4]!=null)
+        {
+          rower.add(eta_lines[1].toString());
+          rower.add(dat[0][5 * i + 1].toString());
+          rower.add(dat[0][5 * i + 2].toString());
+          rower.add(dat[0][5 * i + 3].toString());
+          rower.add(dat[0][5 * i + 4].toString());
+          rower.add(dat[0][5 * i + 5].toString());
+          rows.add(rower);
+        }
+
+      }
+
+    }
+    String csver = const ListToCsvConverter().convert(rows);
+    await csvFile.writeAsString(csver);
 
     //*************Formula***************************************************
 
@@ -719,21 +739,42 @@ class _MyHomePageState extends State<MyHomePage> {
         LineSplitter ls = new LineSplitter();
         List<String> eta_lines = ls.convert(eta);
 
-        if (eta_lines[1]!='' || dat[0][12*i + 1]!='' || dat[0][12*i + 2]!='' || dat[0][12*i + 3]!='' || dat[0][12*i + 4]!='' || dat[0][12*i + 5]!='' || dat[0][12*i + 6]!='' || dat[0][12*i + 7]!='' || dat[0][12*i + 9]!='' || dat[0][12*i + 10]!='' || dat[0][12*i + 11]!='') {
-          rower.add(eta_lines[1]);
-          rower.add(dat[0][12 * i + 1]);
-          rower.add(dat[0][12 * i + 2]);
-          rower.add(dat[0][12 * i + 3]);
-          rower.add(dat[0][12 * i + 4]);
-          rower.add(dat[0][12 * i + 5]);
-          rower.add(dat[0][12 * i + 6]);
-          rower.add(dat[0][12 * i + 7]);
-          rower.add(dat[0][12 * i + 8]);
-          rower.add(dat[0][12 * i + 9]);
-          rower.add(dat[0][12 * i + 10]);
-          rower.add(dat[0][12 * i + 11]);
+        if ('${eta_lines[1]}'!=''
+            || '${dat[0][12*i + 1]}'!=''
+            || '${dat[0][12*i + 2]}'!=''
+            || '${dat[0][12*i + 3]}'!=''
+            || '${dat[0][12*i + 4]}'!=''
+            || '${dat[0][12*i + 5]}'!=''
+            || '${dat[0][12*i + 6]}'!=''
+            || '${dat[0][12*i + 7]}'!=''
+            || '${dat[0][12*i + 9]}'!=''
+            || '${dat[0][12*i + 10]}'!=''
+            || '${dat[0][12*i + 11]}'!=''
+            ||eta_lines[1]!=null
+            || dat[0][12*i + 1]!=null
+            || dat[0][12*i + 2]!=null
+            || dat[0][12*i + 3]!=null
+            || dat[0][12*i + 4]!=null
+            || dat[0][12*i + 5]!=null
+            || dat[0][12*i + 6]!=null
+            || dat[0][12*i + 7]!=null
+            || dat[0][12*i + 9]!=null
+            || dat[0][12*i + 10]!=null
+            || dat[0][12*i + 11]!=null) {
+          rower.add(eta_lines[1].toString());
+          rower.add(dat[0][12 * i + 1].toString());
+          rower.add(dat[0][12 * i + 2].toString());
+          rower.add(dat[0][12 * i + 3].toString());
+          rower.add(dat[0][12 * i + 4].toString());
+          rower.add(dat[0][12 * i + 5].toString());
+          rower.add(dat[0][12 * i + 6].toString());
+          rower.add(dat[0][12 * i + 7].toString());
+          rower.add(dat[0][12 * i + 8].toString());
+          rower.add(dat[0][12 * i + 9].toString());
+          rower.add(dat[0][12 * i + 10].toString());
+          rower.add(dat[0][12 * i + 11].toString());
           List _mas = dat[0][12 * i + 12].split("\n");
-          rower.add('${_mas[0]}');
+          rower.add(_mas[0].toString());
           rows.add(rower);
         }
 
@@ -745,20 +786,42 @@ class _MyHomePageState extends State<MyHomePage> {
         LineSplitter ls = new LineSplitter();
         List<String> eta_lines = ls.convert(eta);
 
-        if (eta_lines[1]!='' || dat[0][12*i + 1]!='' || dat[0][12*i + 2]!='' || dat[0][12*i + 3]!='' || dat[0][12*i + 4]!='' || dat[0][12*i + 5]!='' || dat[0][12*i + 6]!='' || dat[0][12*i + 7]!='' || dat[0][12*i + 9]!='' || dat[0][12*i + 10]!='' || dat[0][12*i + 11]!='') {
-          rower.add(eta_lines[1]);
-          rower.add(dat[0][12 * i + 1]);
-          rower.add(dat[0][12 * i + 2]);
-          rower.add(dat[0][12 * i + 3]);
-          rower.add(dat[0][12 * i + 4]);
-          rower.add(dat[0][12 * i + 5]);
-          rower.add(dat[0][12 * i + 6]);
-          rower.add(dat[0][12 * i + 7]);
-          rower.add(dat[0][12 * i + 8]);
-          rower.add(dat[0][12 * i + 9]);
-          rower.add(dat[0][12 * i + 10]);
-          rower.add(dat[0][12 * i + 11]);
-          rower.add(dat[0][12 * i + 12]);
+        if ('${eta_lines[1]}'!=''
+            || '${dat[0][12*i + 1]}'!=''
+            || '${dat[0][12*i + 2]}'!=''
+            || '${dat[0][12*i + 3]}'!=''
+            || '${dat[0][12*i + 4]}'!=''
+            || '${dat[0][12*i + 5]}'!=''
+            || '${dat[0][12*i + 6]}'!=''
+            || '${dat[0][12*i + 7]}'!=''
+            || '${dat[0][12*i + 9]}'!=''
+            || '${dat[0][12*i + 10]}'!=''
+            || '${dat[0][12*i + 11]}'!=''
+            ||eta_lines[1]!=null
+            || dat[0][12*i + 1]!=null
+            || dat[0][12*i + 2]!=null
+            || dat[0][12*i + 3]!=null
+            || dat[0][12*i + 4]!=null
+            || dat[0][12*i + 5]!=null
+            || dat[0][12*i + 6]!=null
+            || dat[0][12*i + 7]!=null
+            || dat[0][12*i + 9]!=null
+            || dat[0][12*i + 10]!=null
+            || dat[0][12*i + 11]!=null)
+        {
+          rower.add(eta_lines[1].toString());
+          rower.add(dat[0][12 * i + 1].toString());
+          rower.add(dat[0][12 * i + 2].toString());
+          rower.add(dat[0][12 * i + 3].toString());
+          rower.add(dat[0][12 * i + 4].toString());
+          rower.add(dat[0][12 * i + 5].toString());
+          rower.add(dat[0][12 * i + 6].toString());
+          rower.add(dat[0][12 * i + 7].toString());
+          rower.add(dat[0][12 * i + 8].toString());
+          rower.add(dat[0][12 * i + 9].toString());
+          rower.add(dat[0][12 * i + 10].toString());
+          rower.add(dat[0][12 * i + 11].toString());
+          rower.add(dat[0][12 * i + 12].toString());
           rows.add(rower);
         }
 
@@ -766,7 +829,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     }
     String csver = const ListToCsvConverter().convert(rows);
-    csvFile.writeAsString(csver);
+    await csvFile.writeAsString(csver);
 
     //*************Formula***************************************************
 
@@ -1568,27 +1631,66 @@ class _MyHomePageState extends State<MyHomePage> {
                         rower.add('u_beaconid');
                         rows.add(rower);
                       }
-                      else if(i>0)
+                      else if(i>0 && i!=((dat[0].length)/5).round()-1)
                       {
                         List<dynamic> rower = [];
                         var eta=dat[0][5*(i-1)+5];
                         LineSplitter ls = new LineSplitter();
                         List<String> eta_lines = ls.convert(eta);
 
-                        if (eta_lines[1]!='' || dat[0][5*i + 1]!='' || dat[0][5*i + 2]!='' || dat[0][5*i + 3]!='' || dat[0][5*i + 4]!='')
-                          rower.add(eta_lines[1]);
-                        rower.add(dat[0][5*i + 1]);
-                        rower.add(dat[0][5*i + 2]);
-                        rower.add(dat[0][5*i + 3]);
-                        rower.add(dat[0][5*i + 4]);
+                        if ('${eta_lines[1]}'!=''
+                            || '${dat[0][5*i + 1]}'!=''
+                            || '${dat[0][5*i + 2]}'!=''
+                            || '${dat[0][5*i + 3]}'!=''
+                            || '${dat[0][5*i + 4]}'!=''
+                            ||eta_lines[1]!=null
+                            || dat[0][5*i + 1]!=null
+                            || dat[0][5*i + 2]!=null
+                            || dat[0][5*i + 3]!=null
+                            || dat[0][5*i + 4]!=null) {
+                          rower.add(eta_lines[1].toString());
+                          rower.add(dat[0][5 * i + 1].toString());
+                          rower.add(dat[0][5 * i + 2].toString());
+                          rower.add(dat[0][5 * i + 3].toString());
+                          rower.add(dat[0][5 * i + 4].toString());
+                          List _mas = dat[0][5 * i + 5].split("\n");
+                          rower.add(_mas[0].toString());
+                          rows.add(rower);
+                        }
 
-                        rows.add(rower);
+                      }
+                      else if(i>0 && i==((dat[0].length)/5).round()-1)
+                      {
+                        List<dynamic> rower = [];
+                        var eta=dat[0][5*(i-1)+5];
+                        LineSplitter ls = new LineSplitter();
+                        List<String> eta_lines = ls.convert(eta);
+
+                        if ('${eta_lines[1]}'!=''
+                            || '${dat[0][5*i + 1]}'!=''
+                            || '${dat[0][5*i + 2]}'!=''
+                            || '${dat[0][5*i + 3]}'!=''
+                            || '${dat[0][5*i + 4]}'!=''
+                            ||eta_lines[1]!=null
+                            || dat[0][5*i + 1]!=null
+                            || dat[0][5*i + 2]!=null
+                            || dat[0][5*i + 3]!=null
+                            || dat[0][5*i + 4]!=null)
+                        {
+                          rower.add(eta_lines[1].toString());
+                          rower.add(dat[0][5 * i + 1].toString());
+                          rower.add(dat[0][5 * i + 2].toString());
+                          rower.add(dat[0][5 * i + 3].toString());
+                          rower.add(dat[0][5 * i + 4].toString());
+                          rower.add(dat[0][5 * i + 5].toString());
+                          rows.add(rower);
+                        }
 
                       }
 
                     }
                     String csver = const ListToCsvConverter().convert(rows);
-                    csvFile.writeAsString(csver);
+                    await csvFile.writeAsString(csver);
                     //*************Formula***************************************************
 
                     bt_data_upload(fullPath2);
@@ -1646,21 +1748,42 @@ class _MyHomePageState extends State<MyHomePage> {
                         LineSplitter ls = new LineSplitter();
                         List<String> eta_lines = ls.convert(eta);
 
-                        if (eta_lines[1]!='' || dat[0][12*i + 1]!='' || dat[0][12*i + 2]!='' || dat[0][12*i + 3]!='' || dat[0][12*i + 4]!='' || dat[0][12*i + 5]!='' || dat[0][12*i + 6]!='' || dat[0][12*i + 7]!='' || dat[0][12*i + 9]!='' || dat[0][12*i + 10]!='' || dat[0][12*i + 11]!='') {
-                          rower.add(eta_lines[1]);
-                          rower.add(dat[0][12 * i + 1]);
-                          rower.add(dat[0][12 * i + 2]);
-                          rower.add(dat[0][12 * i + 3]);
-                          rower.add(dat[0][12 * i + 4]);
-                          rower.add(dat[0][12 * i + 5]);
-                          rower.add(dat[0][12 * i + 6]);
-                          rower.add(dat[0][12 * i + 7]);
-                          rower.add(dat[0][12 * i + 8]);
-                          rower.add(dat[0][12 * i + 9]);
-                          rower.add(dat[0][12 * i + 10]);
-                          rower.add(dat[0][12 * i + 11]);
+                        if ('${eta_lines[1]}'!=''
+                            || '${dat[0][12*i + 1]}'!=''
+                            || '${dat[0][12*i + 2]}'!=''
+                            || '${dat[0][12*i + 3]}'!=''
+                            || '${dat[0][12*i + 4]}'!=''
+                            || '${dat[0][12*i + 5]}'!=''
+                            || '${dat[0][12*i + 6]}'!=''
+                            || '${dat[0][12*i + 7]}'!=''
+                            || '${dat[0][12*i + 9]}'!=''
+                            || '${dat[0][12*i + 10]}'!=''
+                            || '${dat[0][12*i + 11]}'!=''
+                            ||eta_lines[1]!=null
+                            || dat[0][12*i + 1]!=null
+                            || dat[0][12*i + 2]!=null
+                            || dat[0][12*i + 3]!=null
+                            || dat[0][12*i + 4]!=null
+                            || dat[0][12*i + 5]!=null
+                            || dat[0][12*i + 6]!=null
+                            || dat[0][12*i + 7]!=null
+                            || dat[0][12*i + 9]!=null
+                            || dat[0][12*i + 10]!=null
+                            || dat[0][12*i + 11]!=null) {
+                          rower.add(eta_lines[1].toString());
+                          rower.add(dat[0][12 * i + 1].toString());
+                          rower.add(dat[0][12 * i + 2].toString());
+                          rower.add(dat[0][12 * i + 3].toString());
+                          rower.add(dat[0][12 * i + 4].toString());
+                          rower.add(dat[0][12 * i + 5].toString());
+                          rower.add(dat[0][12 * i + 6].toString());
+                          rower.add(dat[0][12 * i + 7].toString());
+                          rower.add(dat[0][12 * i + 8].toString());
+                          rower.add(dat[0][12 * i + 9].toString());
+                          rower.add(dat[0][12 * i + 10].toString());
+                          rower.add(dat[0][12 * i + 11].toString());
                           List _mas = dat[0][12 * i + 12].split("\n");
-                          rower.add('${_mas[0]}');
+                          rower.add(_mas[0].toString());
                           rows.add(rower);
                         }
 
@@ -1672,20 +1795,42 @@ class _MyHomePageState extends State<MyHomePage> {
                         LineSplitter ls = new LineSplitter();
                         List<String> eta_lines = ls.convert(eta);
 
-                        if (eta_lines[1]!='' || dat[0][12*i + 1]!='' || dat[0][12*i + 2]!='' || dat[0][12*i + 3]!='' || dat[0][12*i + 4]!='' || dat[0][12*i + 5]!='' || dat[0][12*i + 6]!='' || dat[0][12*i + 7]!='' || dat[0][12*i + 9]!='' || dat[0][12*i + 10]!='' || dat[0][12*i + 11]!='') {
-                          rower.add(eta_lines[1]);
-                          rower.add(dat[0][12 * i + 1]);
-                          rower.add(dat[0][12 * i + 2]);
-                          rower.add(dat[0][12 * i + 3]);
-                          rower.add(dat[0][12 * i + 4]);
-                          rower.add(dat[0][12 * i + 5]);
-                          rower.add(dat[0][12 * i + 6]);
-                          rower.add(dat[0][12 * i + 7]);
-                          rower.add(dat[0][12 * i + 8]);
-                          rower.add(dat[0][12 * i + 9]);
-                          rower.add(dat[0][12 * i + 10]);
-                          rower.add(dat[0][12 * i + 11]);
-                          rower.add(dat[0][12 * i + 12]);
+                        if ('${eta_lines[1]}'!=''
+                            || '${dat[0][12*i + 1]}'!=''
+                            || '${dat[0][12*i + 2]}'!=''
+                            || '${dat[0][12*i + 3]}'!=''
+                            || '${dat[0][12*i + 4]}'!=''
+                            || '${dat[0][12*i + 5]}'!=''
+                            || '${dat[0][12*i + 6]}'!=''
+                            || '${dat[0][12*i + 7]}'!=''
+                            || '${dat[0][12*i + 9]}'!=''
+                            || '${dat[0][12*i + 10]}'!=''
+                            || '${dat[0][12*i + 11]}'!=''
+                            ||eta_lines[1]!=null
+                            || dat[0][12*i + 1]!=null
+                            || dat[0][12*i + 2]!=null
+                            || dat[0][12*i + 3]!=null
+                            || dat[0][12*i + 4]!=null
+                            || dat[0][12*i + 5]!=null
+                            || dat[0][12*i + 6]!=null
+                            || dat[0][12*i + 7]!=null
+                            || dat[0][12*i + 9]!=null
+                            || dat[0][12*i + 10]!=null
+                            || dat[0][12*i + 11]!=null)
+                        {
+                          rower.add(eta_lines[1].toString());
+                          rower.add(dat[0][12 * i + 1].toString());
+                          rower.add(dat[0][12 * i + 2].toString());
+                          rower.add(dat[0][12 * i + 3].toString());
+                          rower.add(dat[0][12 * i + 4].toString());
+                          rower.add(dat[0][12 * i + 5].toString());
+                          rower.add(dat[0][12 * i + 6].toString());
+                          rower.add(dat[0][12 * i + 7].toString());
+                          rower.add(dat[0][12 * i + 8].toString());
+                          rower.add(dat[0][12 * i + 9].toString());
+                          rower.add(dat[0][12 * i + 10].toString());
+                          rower.add(dat[0][12 * i + 11].toString());
+                          rower.add(dat[0][12 * i + 12].toString());
                           rows.add(rower);
                         }
 
@@ -1693,7 +1838,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     }
                     String csver = const ListToCsvConverter().convert(rows);
-                    csvFile.writeAsString(csver);
+                    await csvFile.writeAsString(csver);
 
                     //*************Formula***************************************************
 
@@ -2224,7 +2369,7 @@ Future<void> gps_data_upload(path) async {
   print(
       '********************************************************************************************');
   if (response.statusCode == 200) {
-   // deleteFile();
+   deleteFile();
   }
 }
 
